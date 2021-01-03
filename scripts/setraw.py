@@ -1,6 +1,17 @@
 import sys
 import driver
 
+def setRaw(valsOrNone):
+    pwm = driver.makePwm()
+    
+    for i in range(len(valsOrNone)):
+        val = valsOrNone[i]
+
+        if val is None:
+            continue
+
+        pwm.setServoPulse(i, val)
+
 def main():
     if len(sys.argv) == 1:
         print("need more args")
@@ -14,14 +25,8 @@ def main():
         else:
             valsOrNone.append(int(arg))
     
-    pwm = driver.makePwm()
+    setRaw(valsOrNone)
     
-    for i in range(len(valsOrNone)):
-        val = valsOrNone[i]
-        
-        if val is None:
-            continue
 
-        pwm.setServoPulse(i, val)
-
-main()
+if __name__ == '__main__':
+    main()
