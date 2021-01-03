@@ -1,0 +1,3 @@
+increasing values turns it clockwise, so...
+right motor: incrase val -> forward
+left motor: icrease val -> backward
