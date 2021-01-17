@@ -7,7 +7,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ERROR);
 
-$input_state_file_location = "input_state.json";
+$input_state_file_location = "/srv/input_state.json";
 
 function setBotControlValue($bot_id, $control, $new_val) {
     global $input_state_file_location;

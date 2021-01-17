@@ -11,7 +11,7 @@ class ClientThread(threading.Thread):
     def run(self):
         _, fromAddr = self.sock.recvfrom(1024)
         while True:
-            with open('input_state.json','r') as f:
+            with open('/srv/input_state.json','r') as f:
                 inputState = json.load(f)
             botInputState = inputState[self.botID]
             jsonStr = json.dumps(botInputState)
