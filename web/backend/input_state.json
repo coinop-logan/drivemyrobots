@@ -1,7 +1,8 @@
 {
-    "bigbot": {
-        "right_wheel": -0,
-        "left_wheel": -0,
-        "cam_pos": 0.7
+    "bankbot": {
+        "right_wheel": 0,
+        "left_wheel": 0,
+        "cam_x": 0,
+        "cam_y": 0
     }
 }
