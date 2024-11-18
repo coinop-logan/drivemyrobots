@@ -37,7 +37,7 @@ class InputReceiver:
         self.lastCommandReceivedTime = time.time()
     
     def runBotForever(self):
-        if self.lastCommandReceivedTime + 1 > time.time():
+        if self.lastCommandReceivedTime + 1 > time.time(): # TODO: not sure why we have a 1 second built in arbitrary lag here lol
             if self.inputState:
                 bot_driver.enactInput(self.inputState)
         if not self.exiting:
