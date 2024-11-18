@@ -7,7 +7,7 @@ def convertValue(isLeftMotor, vecValOrNone):
     else:
         vecVal = vecValOrNone
     
-    neutralVal = 1465 if isLeftMotor else 1455
+    neutralVal = 1420 if isLeftMotor else 1470
     maxForwardAdd = 250 if isLeftMotor else -250
     maxBackwardAdd = -250 if isLeftMotor else 250
 
@@ -21,6 +21,14 @@ def convertValue(isLeftMotor, vecValOrNone):
     
     finalVal = neutralVal + toAdd
     return finalVal
+
+def setDrive(left, right):
+    vals = [
+        convertValue(True, float(left)),
+        convertValue(False, float(right))
+    ]
+
+    setRaw(vals)
 
 def main():
     if len(sys.argv) != 3:

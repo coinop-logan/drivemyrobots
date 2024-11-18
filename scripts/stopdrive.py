@@ -1,9 +1,7 @@
 from driver import *
+from setdrive import setDrive
 
 def main():
-  pwm = makePwm()
-
-  pwm.setServoPulse(0,1465)
-  pwm.setServoPulse(1,1455)
+  setDrive(0,0)
 
 main()
