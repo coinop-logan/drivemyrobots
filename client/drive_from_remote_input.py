@@ -25,9 +25,11 @@ def main():
     newsock.sendto(encodedBotID, (serverIP, dedicatedPort))
 
     print("starting drive loop")
+    lastInputState = {}
     while True:
         driveData, _ = newsock.recvfrom(1024)
         inputState = json.loads(driveData.decode())
-        bot_driver.enactInput(inputState)
+        if inputState != lastInputState:
+            bot_driver.enactInput(inputState)
 
 main()
