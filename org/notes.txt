@@ -1,7 +1,0 @@
-See readme!
-
-\0/left key vals: (backward -> stop -> forward)
-    1100 1465 1700
-
-1/right key vals:
-    1700 1455 1100
