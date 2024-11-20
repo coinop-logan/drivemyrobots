@@ -42,6 +42,7 @@ class DedicatedHandler(asyncio.Protocol):
         self.loop = loop
         self.botID = botID
         self.transport = None
+        self.exiting = False
 
     def connection_made(self, transport):
         self.transport = transport
@@ -50,6 +51,9 @@ class DedicatedHandler(asyncio.Protocol):
         self.send_input()
 
     def send_input(self):
+        if self.exiting:
+            return
+            
         try:
             with open('input_state.json', 'r') as f:
                 input_state = json.load(f)
@@ -61,11 +65,13 @@ class DedicatedHandler(asyncio.Protocol):
             print(f"Error sending input to bot {self.botID}: {e}")
 
         # Schedule the next send
-        self.loop.call_later(0.5, self.send_input)
+        if not self.exiting:
+            self.loop.call_later(0.5, self.send_input)
 
     def connection_lost(self, exc):
         print(f"Connection lost with bot {self.botID}")
         active_connections.pop(self.botID, None)
+        self.exiting = True
 
     def data_received(self, data):
         print(f"Received from bot {self.botID}: {data.decode()}")
