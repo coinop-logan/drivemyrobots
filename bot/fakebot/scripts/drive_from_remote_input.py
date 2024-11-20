@@ -43,6 +43,7 @@ class DedicatedClient(asyncio.Protocol):
         self.loop = loop
         self.transport = None
         self.exiting = False
+        self.lastCommandReceivedTime = 0
 
     def connection_made(self, transport):
         self.transport = transport
