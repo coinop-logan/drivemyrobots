@@ -1,35 +1,80 @@
-import socket, sys, bot_driver, json, time, struct
+import asyncio, sys, bot_driver, json, time
 
 serverIP = sys.argv[1]
-helloPort = 4546
+requestPort = sys.argv[2]
+
+class RequestMaker:
+    def __init__(self, loop):
+        self.loop = loop
+        self.botID = bot_driver.botID
+        self.transport = None
+    
+    def connection_made(self, transport):
+        self.transport = transport
+        self.transport.sendto(self.botID.encode())
+    
+    def error_received(self, exc):
+        print('RequestHandler: Error received:', exc)
+
+    def connection_lost(self, exc):
+        print("RequestHandler: Connection closed")
+
+
+class InputReceiver:
+    def __init__(self, loop):
+        self.loop = loop
+        self.transport = None
+        self.inputState = None
+        self.lastCommandReceivedTime = 0
+        self.exiting = False
+    
+    def connection_made(self, transport):
+        self.transport = transport
+        self.loop.call_soon(self.runBotForever)
+    
+    def datagram_received(self, data, addr):
+        self.inputState = json.loads(data.decode())
+        self.lastCommandReceivedTime = time.time()
+    
+    def runBotForever(self):
+        if self.lastCommandReceivedTime + 1 > time.time(): # TODO: not sure why we have a 1 second built in arbitrary lag here lol
+            if self.inputState:
+                bot_driver.enactInput(self.inputState)
+        if not self.exiting:
+            self.loop.call_soon(self.runBotForever)
+
+    def error_received(self, exc):
+        print('InputReceiver: Error received:', exc)
+        bot_driver.close()
+        self.exiting = True
+
+    def connection_lost(self, exc):
+        print("InputReceiver: Connection closed")
+        bot_driver.close()
+        self.exiting = True
 
 def main():
-    print("setting up bot...")
     bot_driver.setup()
 
-    encodedBotID = bot_driver.botID.encode()
+    loop = asyncio.get_event_loop()
 
-    print("contacting server...")
-    helloSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    helloSocket.bind(("0.0.0.0", helloPort))
-    helloSocket.sendto(encodedBotID, (serverIP, helloPort))
+    makeRequest = loop.create_datagram_endpoint(
+        lambda: RequestMaker(loop),
+        remote_addr = (serverIP, requestPort)
+    )
 
-    print("listening for response...")
-    dedicatedPortData, _ = helloSocket.recvfrom(1024)
-    dedicatedPort = struct.unpack("I", dedicatedPortData)[0]
+    receiveInput = loop.create_datagram_endpoint(
+        lambda: InputReceiver(loop),
+        local_addr = ("localhost",4546)
+    )
 
-    print("reconnecting to dedicated port %i..." % dedicatedPort)
-    newsock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-    print("sending to", serverIP ,dedicatedPort)
-    newsock.bind(("0.0.0.0", dedicatedPort))
-    newsock.sendto(encodedBotID, (serverIP, dedicatedPort))
+    transport1, protocol1 = loop.run_until_complete(makeRequest)
+    transport2, protocol2 = loop.run_until_complete(receiveInput)
 
-    print("starting drive loop")
-    lastInputState = {}
-    while True:
-        driveData, _ = newsock.recvfrom(1024)
-        inputState = json.loads(driveData.decode())
-        if inputState != lastInputState:
-            bot_driver.enactInput(inputState)
+    loop.run_forever()
+    transport.close()
+    loop.close()
+
+    asyncio.run(main())
 
 main()
