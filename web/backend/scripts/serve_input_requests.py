@@ -53,14 +53,14 @@ class DedicatedHandler(asyncio.Protocol):
     def send_input(self):
         if self.exiting:
             return
-            
+
         try:
             with open('input_state.json', 'r') as f:
                 input_state = json.load(f)
             bot_input_state = input_state.get(self.botID, {})
             json_str = json.dumps(bot_input_state)
             self.transport.write(json_str.encode())
-            print(f"Sent input to bot {self.botID}: {bot_input_state}")
+            # print(f"Sent input to bot {self.botID}: {bot_input_state}")
         except Exception as e:
             print(f"Error sending input to bot {self.botID}: {e}")
 

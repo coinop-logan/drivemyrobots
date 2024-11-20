@@ -53,7 +53,7 @@ class DedicatedClient(asyncio.Protocol):
     def data_received(self, data):
         try:
             input_state = json.loads(data.decode())
-            print(f"Received input state: {input_state}")
+            # print(f"Received input state: {input_state}")
             bot_driver.enactInput(input_state)
         except Exception as e:
             print(f"Error processing received input: {e}")

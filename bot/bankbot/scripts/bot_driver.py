@@ -15,7 +15,7 @@ def wheelValIsValid(wheelVal):
 
 def translateVal(inputVal):
     translated = inputVal * (SERVO_HIGH_VAL - SERVO_LOW_VAL) + SERVO_LOW_VAL
-    print(translated)
+    # print(translated)
     return translated
 
 def setup():
