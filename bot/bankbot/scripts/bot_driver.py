@@ -1,8 +1,14 @@
 from time import sleep
 
-import setdrive
+import setraw
 
 botID = "bankbot"
+
+def wheelValIsValid(wheelVal):
+    try:
+        return wheelVal > 0 and wheelVal < 4096
+    except:
+        return False
 
 def setup():
     pass
@@ -11,4 +17,7 @@ def close():
     pass
 
 def enactInput(inputState):
-    setdrive.setDrive(inputState['left_wheel'], inputState['right_wheel'])
+    if not (wheelValIsValid(inputState['left_wheel']) and wheelValIsValid(inputState['right_wheel'])):
+        raise ValueError("wheel vals out of acceptable range")
+        
+    setraw.setRaw(inputState['left_wheel'], inputState['right_wheel'])
