@@ -1,2 +1,3 @@
 *.pyc
 _org/
+**/node_modules/
